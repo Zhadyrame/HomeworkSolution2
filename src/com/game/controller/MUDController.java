@@ -1,5 +1,10 @@
+package com.example.mud.controller;
+
 import java.util.Scanner;
 import java.util.List;
+import com.example.mud.player.Player;
+import com.example.mud.world.Room;
+import com.example.mud.items.Item;
 
 public class MUDController {
     private Player player;
@@ -34,11 +39,8 @@ public class MUDController {
                 move(argument);
                 break;
             case "pick":
-                if (argument.startsWith("up ")) {
-                    pickUp(argument.substring(3));
-                } else {
-                    System.out.println("Invalid command. Try 'pick up <item>'");
-                }
+            case "pick up":
+                pickUp(argument);
                 break;
             case "inventory":
                 checkInventory();
@@ -52,7 +54,7 @@ public class MUDController {
                 System.out.println("Goodbye!");
                 break;
             default:
-                System.out.println("Unknown command.");
+                System.out.println("Unknown command. Type 'help' for commands.");
         }
     }
 
@@ -62,6 +64,11 @@ public class MUDController {
     }
 
     private void move(String direction) {
+        if (direction.isEmpty()) {
+            System.out.println("Move where? Try 'move forward', 'move left', etc.");
+            return;
+        }
+
         Room nextRoom = player.getCurrentRoom().getAdjacentRoom(direction);
         if (nextRoom != null) {
             player.setCurrentRoom(nextRoom);
@@ -73,6 +80,11 @@ public class MUDController {
     }
 
     private void pickUp(String itemName) {
+        if (itemName.isEmpty()) {
+            System.out.println("Pick up what? Try 'pick up sword'.");
+            return;
+        }
+
         Room currentRoom = player.getCurrentRoom();
         Item item = currentRoom.getItem(itemName);
         if (item != null) {
@@ -99,8 +111,8 @@ public class MUDController {
     private void showHelp() {
         System.out.println("Available commands:");
         System.out.println("look - Describes the current room.");
-        System.out.println("move <forward|back|left|right> - Moves in a specified direction if possible.");
-        System.out.println("pick up <itemName> - Picks up an item from the ground.");
+        System.out.println("move <forward|back|left|right> - Moves in a specified direction.");
+        System.out.println("pick up <itemName> - Picks up an item.");
         System.out.println("inventory - Lists items you are carrying.");
         System.out.println("help - Shows this command list.");
         System.out.println("quit or exit - Ends the game.");
